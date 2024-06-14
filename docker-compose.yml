@@ -8,23 +8,30 @@ services:
  nexus:
   image: sonatype/nexus
   container_name: nexus
+  restart: always
+  environment:
+   - TZ=Pacific/Auckland
   ports:
     - "8081:8081"
   networks:
     - devnet
   volumes:
-    - "/opt/nexus/:/var/lib/nexus"
+    - "./nexus/:/var/lib/nexus"
+    - "./nexus-data/:/nexus-data"
 
  jenkins:
-  image: jenkins
+  image: jenkins/jenkins
   container_name: jenkins
+  restart: always
+  environment:
+   - TZ=Pacific/Auckland
   ports:
     - "8080:8080"
   networks:
     - devnet
   volumes:
-    - "$PWD/jenkins:/var/jenkins_home"
- 
+    - "./jenkins:/var/jenkins_home"
+
  sonarqube:
   image: sonarqube
   container_name: sonarqube
@@ -41,8 +48,9 @@ services:
    - SONARQUBE_JDBC_URL=jdbc:postgresql://sonardb:5432/sonar
    - SONARQUBE_JDBC_USERNAME=sonar
    - SONARQUBE_JDBC_PASSWORD=sonar
+   - TZ=Pacific/Auckland
   volumes:
-    - "/opt/sonar/:/var/lib/sonar"
+    - "./sonar/:/var/lib/sonar"
 
  sonardb:
   networks:
@@ -54,13 +62,16 @@ services:
    - POSTGRES_USER=sonar
    - POSTGRES_PASSWORD=sonar
    - POSTGRESQL_DB=sonar
+   - TZ=Pacific/Auckland
   ports:
     - "5432:5432"
   volumes:
-    - "/opt/postgres:/var/lib/postgresql"
+    - "./postgres:/var/lib/postgresql"
 
  cadvisor:
   image: google/cadvisor
+  environment:
+   - TZ=Pacific/Auckland
   volumes:
     - "/:/rootfs:ro"
     - "/var/run:/var/run:rw"
